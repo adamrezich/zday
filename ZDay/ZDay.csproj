@@ -49,6 +49,7 @@
     <Compile Include="Area.cs" />
     <Compile Include="Character.cs" />
     <Compile Include="Console.cs" />
+    <Compile Include="Entity.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

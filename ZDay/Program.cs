@@ -9,6 +9,7 @@ namespace ZDay {
 		static void Main(string[] args) {
 			TCODConsole.initRoot(80, 50, "Z-Day", false);
 			TCODSystem.setFps(30);
+			TCODMouse.showCursor(false);
 			Game game = new Game();
 			game.Play();
 		}

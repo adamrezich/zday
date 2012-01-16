@@ -13,7 +13,12 @@ namespace ZDay {
 		public Game() {
 			player = new Character();
 			player.Symbol = '@';
+			Character test = new Character();
+			test.Symbol = '!';
+			test.ForegroundColor = TCODColor.red;
+			test.Position = new Point(4, 4);
 			Characters.Add(player);
+			Characters.Add(test);
 		}
 
 		public void Play() {
@@ -29,48 +34,51 @@ namespace ZDay {
 
 		public void Update() {
 			var key = TCODConsole.waitForKeypress(true);
-
+			Point dest = player.Position;
 			switch (key.KeyCode) {
 				case TCODKeyCode.Escape:
 					Over = true;
 					return;
 				case TCODKeyCode.KeypadFour:
 				case TCODKeyCode.Left:
-					player.Position.X--;
+					dest.X--;
 					break;
 				case TCODKeyCode.KeypadEight:
 				case TCODKeyCode.Up:
-					player.Position.Y--;
+					dest.Y--;
 					break;
 				case TCODKeyCode.KeypadSix:
 				case TCODKeyCode.Right:
-					player.Position.X++;
+					dest.X++;
 					break;
 				case TCODKeyCode.KeypadTwo:
 				case TCODKeyCode.Down:
-					player.Position.Y++;
+					dest.Y++;
 					break;
 				case TCODKeyCode.KeypadSeven:
-					player.Position.X--;
-					player.Position.X--;
+					dest.X--;
+					dest.Y--;
 					break;
 				case TCODKeyCode.KeypadNine:
-					player.Position.X++;
-					player.Position.Y--;
+					dest.X++;
+					dest.Y--;
 					break;
 				case TCODKeyCode.KeypadOne:
-					player.Position.X--;
-					player.Position.Y++;
+					dest.X--;
+					dest.Y++;
 					break;
 				case TCODKeyCode.KeypadThree:
-					player.Position.X++;
-					player.Position.Y++;
+					dest.X++;
+					dest.Y++;
+					break;
+				case TCODKeyCode.Enter:
+					if (TCODConsole.isKeyPressed(TCODKeyCode.Alt)) TCODConsole.setFullscreen(!TCODConsole.isFullscreen());
 					break;
 				case TCODKeyCode.Space:
 					Console.WriteLine("TEST " + Convert.ToString(Console.Lines.Count));
 					break;
-
 			}
+			if (dest != player.Position) player.Position = dest;
 		}
 
 		public void DrawHUD() {
@@ -93,33 +101,34 @@ namespace ZDay {
 			r.printFrame(vWidth, 0, windowWidth - vWidth, characterBoxHeight);
 			r.print(vWidth + 2, 0, "CHARACTER");
 			r.print(vWidth + 2, 2, "Adam");
-			r.print(vWidth + 2, 3, "LVL: 1");
-			r.print(vWidth + 2, 4, "SPD: 4");
+			r.print(vWidth + 2, 3, "LVL: " + Convert.ToString(player.Level));
+			r.print(vWidth + 2, 4, "ATK: 2d8 + 4");
 
-			float barHP = ((float)8 / (float)10) * (windowWidth - vWidth - 4);
-			float barStamina = ((float)67 / (float)100) * (windowWidth - vWidth - 4);
-			float barXP = ((float)542 / (float)1000) * (windowWidth - vWidth - 4);
+			float barHP = ((float)player.HP / (float)player.MaxHP) * (windowWidth - vWidth - 4);
+			float barStamina = ((float)player.Stamina / (float)player.MaxStamina) * (windowWidth - vWidth - 4);
+			float barXP = ((float)(player.XP - Character.LevelXP(player.Level)) / (float)(Character.LevelXP(player.Level + 1) - Character.LevelXP(player.Level))) * (windowWidth - vWidth - 4);
 
 			r.setBackgroundFlag(TCODBackgroundFlag.Set);
 			r.setBackgroundColor(TCODColor.darkGreen);
 			r.rect(vWidth + 2, 6, (int)barHP, 1, false);
 			r.setBackgroundColor(TCODColor.grey);
-			r.printEx(vWidth + 2 + ((windowWidth - vWidth - 4) / 2), 6, TCODBackgroundFlag.Darken, TCODAlignment.CenterAlignment, " HP: 8/10 ");
+			r.printEx(vWidth + 2 + ((windowWidth - vWidth - 4) / 2), 6, TCODBackgroundFlag.Darken, TCODAlignment.CenterAlignment, " HP: " + Convert.ToString(player.HP) + "/" + Convert.ToString(player.MaxHP) + " ");
 			r.setBackgroundColor(TCODColor.darkBlue);
 			r.rect(vWidth + 2, 7, (int)barStamina, 1, false);
 			r.setBackgroundColor(TCODColor.grey);
-			r.printEx(vWidth + 2 + ((windowWidth - vWidth - 4) / 2), 7, TCODBackgroundFlag.Darken, TCODAlignment.CenterAlignment, " STM: 67%% ");
+			r.printEx(vWidth + 2 + ((windowWidth - vWidth - 4) / 2), 7, TCODBackgroundFlag.Darken, TCODAlignment.CenterAlignment, " STM: " + Convert.ToString(Math.Round((float)player.Stamina / (float)player.MaxStamina * 100)) + "%% ");
 			r.setBackgroundColor(TCODColor.darkYellow);
 			r.rect(vWidth + 2, 8, (int)barXP, 1, false);
 			r.setBackgroundColor(TCODColor.grey);
-			r.printEx(vWidth + 2 + ((windowWidth - vWidth - 4) / 2), 8, TCODBackgroundFlag.Darken, TCODAlignment.CenterAlignment, " XP: 542 / 1000 ");
+			r.printEx(vWidth + 2 + ((windowWidth - vWidth - 4) / 2), 8, TCODBackgroundFlag.Darken, TCODAlignment.CenterAlignment, " XP: " + Convert.ToString(player.XP) + " / " + Convert.ToString(Character.LevelXP(player.Level + 1)) + " ");
 			r.setBackgroundColor(TCODColor.black);
 
 			r.print(vWidth + 16, 2, "STR: 10");
 			r.print(vWidth + 16, 3, "DEX: 10");
 			r.print(vWidth + 24, 2, "CON: 10");
 			r.print(vWidth + 24, 3, "INT: 10");
-			r.print(vWidth + 16, 4, "ATK: 2d8 + 4");
+			r.print(vWidth + 16, 4, " AC: 8");
+			r.print(vWidth + 24, 4, "SPD: 4");
 
 
 			// console box
@@ -159,7 +168,7 @@ namespace ZDay {
 
 			// time box
 			r.printFrame(vWidth + weaponBoxWidth, 45, windowWidth - vWidth - weaponBoxWidth, weaponBoxHeight);
-			string strKilled = "10000 KILLED";
+			string strKilled = "0 KILLED";
 			string strTime = "DAY 1 00:00.00";
 			r.print(80 - strKilled.Length - 1, 48, strKilled);
 			r.print(80 - strTime.Length - 1, 47, strTime);
@@ -170,9 +179,9 @@ namespace ZDay {
 			r.clear();
 			//TCODConsole.root.print(0, 0, "Hello, world");
 			r.printFrame(0, 0, 47, 47);
-			r.putChar(23, 23, '@');
+			Point offset = new Point(player.Position.X - 23, player.Position.Y - 23);
 			foreach (Character c in Characters) {
-				c.Draw(TCODConsole.root);
+				c.Draw(TCODConsole.root, offset);
 			}
 			DrawHUD();
 			TCODConsole.flush();
