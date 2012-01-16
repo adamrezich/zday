@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace ZDay {
-	class Point {
+	struct Point {
 		public int X;
 		public int Y;
 

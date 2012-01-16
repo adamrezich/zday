@@ -11,6 +11,7 @@ namespace ZDay {
 		Character player;
 
 		public Game() {
+			Console.Lines = new List<ConsoleLine>();
 			player = new Character();
 			player.Symbol = '@';
 			Character test = new Character();
@@ -23,8 +24,6 @@ namespace ZDay {
 
 		public void Play() {
 			Console.WriteLine("Welcome to Z-Day!");
-			Console.WriteLine("Testing a really long line here that is so damn long, it's going to have to be wrapped.");
-			Console.WriteLine("...Again, welcome to Z-Day!");
 			while (!Over && !TCODConsole.isWindowClosed()) {
 				Draw();
 				Update();
@@ -34,7 +33,7 @@ namespace ZDay {
 
 		public void Update() {
 			var key = TCODConsole.waitForKeypress(true);
-			Point dest = player.Position;
+			Point dest = new Point(player.Position.X, player.Position.Y);
 			switch (key.KeyCode) {
 				case TCODKeyCode.Escape:
 					Over = true;
@@ -71,14 +70,23 @@ namespace ZDay {
 					dest.X++;
 					dest.Y++;
 					break;
+				case TCODKeyCode.KeypadDecimal:
+				case TCODKeyCode.KeypadFive:
+					if (player.Stamina < player.MaxStamina) player.Stamina++;
+					break;
 				case TCODKeyCode.Enter:
 					if (TCODConsole.isKeyPressed(TCODKeyCode.Alt)) TCODConsole.setFullscreen(!TCODConsole.isFullscreen());
 					break;
 				case TCODKeyCode.Space:
+					player.Kills++;
+					player.XP += 17;
 					Console.WriteLine("TEST " + Convert.ToString(Console.Lines.Count));
 					break;
 			}
-			if (dest != player.Position) player.Position = dest;
+			if ((dest.X != player.Position.X || dest.Y != player.Position.Y) && player.Stamina > 0) {
+				player.Position = dest;
+				player.Stamina--;
+			}
 		}
 
 		public void DrawHUD() {
@@ -88,8 +96,8 @@ namespace ZDay {
 			int windowHeight = 50;
 			int vWidth = 47;
 			int vHeight = 47;
-			int weaponBoxWidth = 17;
-			int weaponBoxHeight = 5;
+			int weaponBoxWidth = 16;
+			int weaponBoxHeight = 4;
 			int characterBoxHeight = 11;
 
 
@@ -102,7 +110,7 @@ namespace ZDay {
 			r.print(vWidth + 2, 0, "CHARACTER");
 			r.print(vWidth + 2, 2, "Adam");
 			r.print(vWidth + 2, 3, "LVL: " + Convert.ToString(player.Level));
-			r.print(vWidth + 2, 4, "ATK: 2d8 + 4");
+			r.print(vWidth + 2, 4, "ATK: d4");
 
 			float barHP = ((float)player.HP / (float)player.MaxHP) * (windowWidth - vWidth - 4);
 			float barStamina = ((float)player.Stamina / (float)player.MaxStamina) * (windowWidth - vWidth - 4);
@@ -123,12 +131,12 @@ namespace ZDay {
 			r.printEx(vWidth + 2 + ((windowWidth - vWidth - 4) / 2), 8, TCODBackgroundFlag.Darken, TCODAlignment.CenterAlignment, " XP: " + Convert.ToString(player.XP) + " / " + Convert.ToString(Character.LevelXP(player.Level + 1)) + " ");
 			r.setBackgroundColor(TCODColor.black);
 
-			r.print(vWidth + 16, 2, "STR: 10");
-			r.print(vWidth + 16, 3, "DEX: 10");
-			r.print(vWidth + 24, 2, "CON: 10");
-			r.print(vWidth + 24, 3, "INT: 10");
-			r.print(vWidth + 16, 4, " AC: 8");
-			r.print(vWidth + 24, 4, "SPD: 4");
+			r.print(vWidth + 16, 2, "STR: " + Convert.ToString(player.Strength));
+			r.print(vWidth + 16, 3, "DEX: " + Convert.ToString(player.Dexterity));
+			r.print(vWidth + 24, 2, "CON: " + Convert.ToString(player.Constitution));
+			r.print(vWidth + 24, 3, "INT: " + Convert.ToString(player.Intelligence));
+			r.print(vWidth + 16, 4, "DEF: " + Convert.ToString(player.Defense));
+			r.print(vWidth + 24, 4, "SPD: " + Convert.ToString(player.Speed));
 
 
 			// console box
@@ -163,12 +171,13 @@ namespace ZDay {
 
 
 			// weapon box
-			r.printFrame(vWidth, 45, weaponBoxWidth, weaponBoxHeight);
+			r.printFrame(vWidth, windowHeight - weaponBoxHeight, weaponBoxWidth, weaponBoxHeight);
+			r.print(vWidth + 1, windowHeight - weaponBoxHeight + 1, "unarmed");
 
 
 			// time box
-			r.printFrame(vWidth + weaponBoxWidth, 45, windowWidth - vWidth - weaponBoxWidth, weaponBoxHeight);
-			string strKilled = "0 KILLED";
+			r.printFrame(vWidth + weaponBoxWidth, windowHeight - weaponBoxHeight, windowWidth - vWidth - weaponBoxWidth, weaponBoxHeight);
+			string strKilled = Convert.ToString(player.Kills) + " KILLED";
 			string strTime = "DAY 1 00:00.00";
 			r.print(80 - strKilled.Length - 1, 48, strKilled);
 			r.print(80 - strTime.Length - 1, 47, strTime);
@@ -177,7 +186,6 @@ namespace ZDay {
 		public void Draw() {
 			TCODConsole r = TCODConsole.root;
 			r.clear();
-			//TCODConsole.root.print(0, 0, "Hello, world");
 			r.printFrame(0, 0, 47, 47);
 			Point offset = new Point(player.Position.X - 23, player.Position.Y - 23);
 			foreach (Character c in Characters) {

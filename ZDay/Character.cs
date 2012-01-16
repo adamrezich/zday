@@ -14,12 +14,31 @@ namespace ZDay {
 			Military
 		}
 
-		public int Level = 1;
+		public int Level {
+			get {
+				if (XP >= 1500) return 7;
+				if (XP >= 1000) return 6;
+				if (XP >= 600) return 5;
+				if (XP >= 400) return 4;
+				if (XP >= 200) return 3;
+				if (XP >= 100) return 2;
+				return 1;
+			}
+		}
 		public int XP = 0;
 		public int HP = 10;
 		public int MaxHP = 10;
-		public int Stamina = 83;
-		public int MaxStamina = 100;
+		public int Stamina = 400;
+		public int MaxStamina = 400;
+		public int Kills = 0;
+
+		public int Strength = 10;
+		public int Dexterity = 10;
+		public int Constitution = 10;
+		public int Intelligence = 10;
+		public int Attack = 0;
+		public int Defense = 2;
+		public int Speed = 4;
 
 		public static int LevelXP(int level) {
 			switch (level) {
