@@ -9,15 +9,19 @@ namespace ZDay {
 		public bool Over = false;
 		List<Character> Characters = new List<Character>();
 		Character player;
+		Area currentArea;
 
 		public Game() {
 			Console.Lines = new List<ConsoleLine>();
 			player = new Character();
+			player.Position = new Point(8, 8);
 			player.Symbol = '@';
 			Character test = new Character();
 			test.Symbol = '!';
 			test.ForegroundColor = TCODColor.red;
 			test.Position = new Point(4, 4);
+			currentArea = new Area();
+			currentArea.LoadFromFile("Map01.txt");
 			Characters.Add(player);
 			Characters.Add(test);
 		}
@@ -27,7 +31,6 @@ namespace ZDay {
 			while (!Over && !TCODConsole.isWindowClosed()) {
 				Draw();
 				Update();
-				//Draw();
 			}
 		}
 
@@ -80,7 +83,7 @@ namespace ZDay {
 				case TCODKeyCode.Space:
 					player.Kills++;
 					player.XP += 17;
-					Console.WriteLine("TEST " + Convert.ToString(Console.Lines.Count));
+					Console.WriteLine("You pump your fist into the air and miraculously feel slightly more experienced as a result!");
 					break;
 			}
 			if ((dest.X != player.Position.X || dest.Y != player.Position.Y) && player.Stamina > 0) {
@@ -187,7 +190,10 @@ namespace ZDay {
 			TCODConsole r = TCODConsole.root;
 			r.clear();
 			r.printFrame(0, 0, 47, 47);
-			Point offset = new Point(player.Position.X - 23, player.Position.Y - 23);
+			Point offset = new Point(player.Position.X - 22, player.Position.Y - 22);
+			foreach (Terrain t in currentArea.Terrain) {
+				t.Draw(TCODConsole.root, offset);
+			}
 			foreach (Character c in Characters) {
 				c.Draw(TCODConsole.root, offset);
 			}
