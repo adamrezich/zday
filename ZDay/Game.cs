@@ -132,8 +132,11 @@ namespace ZDay {
 				Queue<string> lines = new Queue<string>();
 				int maxLength = windowWidth - vWidth - 2;
 				while (text.Length > maxLength) {
-					lines.Enqueue(text.Substring(0, maxLength));
-					text = " " + text.Substring(maxLength).Trim();
+					string split = text.Substring(0, maxLength);
+					if (text.Substring(maxLength, 1) != " ") split = split.Substring(0, split.LastIndexOf(" ")).TrimEnd();
+					split = split.TrimEnd();
+					lines.Enqueue(split);
+					text = " " + text.Substring(split.Length).Trim();
 				}
 				lines.Enqueue(text);
 				remainingLines -= lines.Count;
