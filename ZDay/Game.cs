@@ -17,19 +17,19 @@ namespace ZDay {
 		}
 
 		public void Play() {
-			TCODConsole.root.clear();
-			//TCODConsole.root.print(0, 0, "Hello, world");
-			foreach (Character c in Characters) {
-				c.Draw(TCODConsole.root);
+			while (!Over && !TCODConsole.isWindowClosed()) {
+				Update();
+				Draw();
 			}
-			TCODConsole.flush();
+		}
+
+		public void Update() {
 			var key = TCODConsole.checkForKeypress();
 
-			if (key.KeyCode == TCODKeyCode.Escape) {
-				Over = true;
-			}
-
 			switch (key.KeyCode) {
+				case TCODKeyCode.Escape:
+					Over = true;
+					return;
 				case TCODKeyCode.KeypadFour:
 				case TCODKeyCode.Left:
 					player.Position.X--;
@@ -46,7 +46,33 @@ namespace ZDay {
 				case TCODKeyCode.Down:
 					player.Position.Y++;
 					break;
+				case TCODKeyCode.KeypadSeven:
+					player.Position.X--;
+					player.Position.X--;
+					break;
+				case TCODKeyCode.KeypadNine:
+					player.Position.X++;
+					player.Position.Y--;
+					break;
+				case TCODKeyCode.KeypadOne:
+					player.Position.X--;
+					player.Position.Y++;
+					break;
+				case TCODKeyCode.KeypadThree:
+					player.Position.X++;
+					player.Position.Y++;
+					break;
+
 			}
+		}
+
+		public void Draw() {
+			TCODConsole.root.clear();
+			//TCODConsole.root.print(0, 0, "Hello, world");
+			foreach (Character c in Characters) {
+				c.Draw(TCODConsole.root);
+			}
+			TCODConsole.flush();
 		}
 	}
 }
