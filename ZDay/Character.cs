@@ -69,7 +69,12 @@ namespace ZDay {
 		}
 
 		public override string ToString() {
-			return "adam";
+			if (Name != null) {
+				if (IsZombie) return Name + "'s zombie";
+				return Name;
+			}
+			if (IsZombie) return "a zombie";
+			return "a survivor";
 		}
 
 		public Attitude AttitudeTowards(Character character) {
@@ -118,7 +123,7 @@ namespace ZDay {
 		public void MeleeAttack(Character target) {
 			if (Game.Current.RNG.Next(20) + Character.StatToModifier(Strength) > target.Defense) {
 				int damage = 1 + Game.Current.RNG.Next(Attack);
-				Console.WriteLine((this == Game.Current.Player ? "You do " : ToString() + " does ") + damage.ToString() + " damage to " + target.ToString());
+				Console.WriteLine((this == Game.Current.Player ? "You do " : ToString() + " does ") + damage.ToString() + " damage to " + target.ToString() + ".");
 			}
 			//character.Kill();
 		}
@@ -146,6 +151,7 @@ namespace ZDay {
 					break;
 				case Prefab.Zombie:
 					c.Symbol = 'z';
+					c.ForegroundColor = TCODColor.desaturatedGreen;
 					c.Infection = 100;
 					c.Faction = Factions.Undead;
 					break;

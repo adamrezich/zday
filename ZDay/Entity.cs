@@ -9,14 +9,15 @@ namespace ZDay {
 		public Area Area;
 		public char Symbol = '?';
 		public TCODColor ForegroundColor = TCODColor.white;
-		public TCODColor BackgroundColor = TCODColor.red;
+		public TCODColor BackgroundColor;
 		public bool OverrideBackgroundColor = false;
 		public Point Position = new Point(0, 0);
 		public bool Solid = true;
+		public string Name;
 
 		public void Draw(TCODConsole console, Point offset) {
 			if (Position.X > offset.X && Position.X <= offset.X + 45 && Position.Y > offset.Y && Position.Y <= offset.Y + 45) {
-				console.putCharEx(Position.X - offset.X, Position.Y - offset.Y, Symbol, ForegroundColor, TCODColor.black);
+				console.putCharEx(Position.X - offset.X, Position.Y - offset.Y, Symbol, ForegroundColor, BackgroundColor == null ? TCODColor.black : BackgroundColor);
 			}
 		}
 	}

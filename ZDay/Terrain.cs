@@ -24,6 +24,8 @@ namespace ZDay {
 					break;
 				case TerrainType.Wall:
 					Symbol = '#';
+					ForegroundColor = TCODColor.darkerGrey;
+					BackgroundColor = TCODColor.lightGrey;
 					Solid = true;
 					break;
 			}

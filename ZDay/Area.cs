@@ -39,6 +39,11 @@ namespace ZDay {
 		public void Generate() {
 			LoadFromFile("Map01.txt");
 			Character.Generate(Character.Prefab.Zombie, new Point(3, 3));
+			Character.Generate(Character.Prefab.Zombie, new Point(7, 7));
+			Character.Generate(Character.Prefab.Zombie, new Point(7, 9));
+			Character.Generate(Character.Prefab.Zombie, new Point(9, 9));
+			Character.Generate(Character.Prefab.Zombie, new Point(2, 3));
+			Character.Generate(Character.Prefab.Zombie, new Point(1, 3));
 		}
 
 		public void LoadFromFile(string file) {
