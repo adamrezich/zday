@@ -96,6 +96,7 @@ namespace ZDay {
 			if (AIType == AITypes.Zombie) {
 				// Don't have a target? Let's find one!
 				bool computedFOV = false;
+				bool wandered = false;
 				if (Target == null) {
 					if (!computedFOV) {
 						Area.Current.Map.computeFov(Position.X, Position.Y, ViewRadius, true, TCODFOVTypes.BasicFov);
@@ -121,7 +122,12 @@ namespace ZDay {
 							foreach (Character c in Area.Current.Characters) {
 								Area.Current.Map.setProperties(c.Position.X, c.Position.Y, true, true);
 							}
-							Pathfinder.compute(Position.X, Position.Y, Target.Position.X, Target.Position.Y);
+							if (!Pathfinder.compute(Position.X, Position.Y, Target.Position.X, Target.Position.Y)) {
+								if (!wandered) {
+									Wander();
+									wandered = true;
+								}
+							}
 						}
 						else {
 							foreach (Character c in Area.Current.Characters) {
@@ -137,6 +143,13 @@ namespace ZDay {
 					Pathfinder.get(0, out x, out y);
 					MoveToPosition(new Point(x, y));
 					if (Position.X == x && Position.Y == y) Pathfinder.walk(ref x2, ref y2, true);
+					else {
+						Target = null;
+						if (!wandered) {
+							Wander();
+							wandered = true;
+						}
+					}
 					TurnTimeout += 5 - Speed;
 				}
 				int dx, dy;
@@ -146,8 +159,11 @@ namespace ZDay {
 					TurnTimeout += 2;
 				}
 
-				if (Target == null && Pathfinder.isEmpty()) {
-					Wander();
+				if (Target == null && Pathfinder.size() < 2) {
+					if (!wandered) {
+						Wander();
+						wandered = true;
+					}
 				}
 			}
 		}
