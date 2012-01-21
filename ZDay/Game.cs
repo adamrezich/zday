@@ -78,7 +78,6 @@ namespace ZDay {
 					break;
 			}
 			if ((dest.X != Player.Position.X || dest.Y != Player.Position.Y) && Player.Stamina > 0) {
-				//player.Position = dest;
 				Player.MoveToPosition(dest);
 				Player.Stamina--;
 			}

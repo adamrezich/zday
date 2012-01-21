@@ -63,6 +63,7 @@ namespace ZDay {
 
 		public Character() {
 			LastLevel = Level;
+			Pathfinder = new TCODPath(Area.Current.Map, 1.0f);
 			Game.Current.Characters.Add(this);
 		}
 
@@ -73,6 +74,14 @@ namespace ZDay {
 		}
 
 		public void Update() {
+			if (this != Game.Current.Player) {
+				if (Game.Current.Player != null && Pathfinder.isEmpty())
+					Pathfinder.compute(Position.X, Position.Y, Game.Current.Player.Position.X, Game.Current.Player.Position.Y);
+				Pathfinder.walk(ref Position.X, ref Position.Y, true);
+				int x, y;
+				Pathfinder.getDestination(out x, out y);
+				Console.WriteLine(x.ToString() + ", " + y.ToString());
+			}
 			if (LastLevel < Level) {
 				LevelUp();
 				LastLevel = Level;

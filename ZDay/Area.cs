@@ -44,15 +44,16 @@ namespace ZDay {
 		public void Generate() {
 			LoadFromFile("Map01.txt");
 			Character.Generate(Character.Prefab.Zombie, new Point(3, 3));
-			Character.Generate(Character.Prefab.Zombie, new Point(7, 7));
+			/*Character.Generate(Character.Prefab.Zombie, new Point(7, 7));
 			Character.Generate(Character.Prefab.Zombie, new Point(7, 9));
 			Character.Generate(Character.Prefab.Zombie, new Point(9, 9));
 			Character.Generate(Character.Prefab.Zombie, new Point(2, 3));
-			Character.Generate(Character.Prefab.Zombie, new Point(1, 3));
+			Character.Generate(Character.Prefab.Zombie, new Point(1, 3));*/
 		}
 
 		public void LoadFromFile(string file) {
 			Point pos = new Point(0, 0);
+			Width = 0;
 			using (StreamReader r = new StreamReader(file)) {
 				string line;
 				while ((line = r.ReadLine()) != null) {
@@ -65,14 +66,15 @@ namespace ZDay {
 								Terrain.Add(new Terrain(pos, TerrainType.Floor));
 								break;
 						}
+						Width = Math.Max(Width, pos.X);
 						pos.X++;
 					}
 					pos.X = 0;
 					pos.Y++;
 				}
 			}
-			Width = pos.X - 1;
-			Height = pos.Y - 1;
+			Width++;
+			Height = pos.Y;
 			Map = new TCODMap(Width, Height);
 			foreach (Terrain t in Terrain) {
 				Map.setProperties(t.Position.X, t.Position.Y, t.Transparent, !t.Solid);
