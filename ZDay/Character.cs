@@ -59,6 +59,8 @@ namespace ZDay {
 		public int Defense = 8;
 		public int Speed = 4;
 
+		private int idleTimer = 0;
+
 		public int ViewRadius = 22;
 
 		public int TurnTimeout = 0;
@@ -94,6 +96,9 @@ namespace ZDay {
 				return;
 			}
 			if (AIType == AITypes.Zombie) {
+
+				Point positionLast = new Point(Position.X, Position.Y);
+
 				// Don't have a target? Let's find one!
 				bool computedFOV = false;
 				bool wandered = false;
@@ -156,6 +161,7 @@ namespace ZDay {
 				Pathfinder.getDestination(out dx, out dy);
 				if (Pathfinder.size() < 2 && Target != null && Target.Position.X == dx && Target.Position.Y == dy) {
 					MeleeAttack(Target);
+					idleTimer = 0;
 					TurnTimeout += 2;
 				}
 
@@ -165,6 +171,17 @@ namespace ZDay {
 						wandered = true;
 					}
 				}
+
+				if (positionLast.X == Position.X && positionLast.Y == Position.Y) idleTimer += 1;
+				else idleTimer = 0;
+				if (idleTimer > 3) {
+					idleTimer = 0;
+					if (!wandered) {
+						Wander();
+						wandered = true;
+					}
+				}
+
 			}
 		}
 
@@ -226,8 +243,8 @@ namespace ZDay {
 			if (attackTotal > target.Defense) {
 				int damage = 0;
 				for (int i = 0; i < AttackMultiplier; i++) damage += (attackRoll == 20 ? damage = AttackDie + AttackDie / 2 : 1 + Game.Current.RNG.Next(AttackDie));
-				damage += AttackModifier;
-				if (attackRoll == 20) damage += damage / 2;
+				damage = Math.Max(damage + AttackModifier, 1);
+				//if (attackRoll == 20) damage += damage / 2;
 				Stamina = Math.Max(Stamina - 40, 0);
 				target.HP -= damage;
 				Console.WriteLine((attackRoll == 20 ? "Critical hit! " : "") + (this == Game.Current.Player ? "You do " : ToString() + " does ") + damage.ToString() + " damage to " + (target == Game.Current.Player ? "you" : target.ToString()) + (target.HP <= 0 ? ", killing " + (target == Game.Current.Player ? "you" : "it") + "." : "."));
@@ -287,9 +304,9 @@ namespace ZDay {
 					c.AttackDie = 4;
 					c.AttackMultiplier = 1;
 					c.AttackModifier = 0;
-					c.Defense = 20;
+					c.Defense = 10;
 					c.Speed = 2;
-					c.MaxHP = 20;
+					c.MaxHP = 10;
 					c.HP = c.MaxHP;
 					c.ViewRadius = 23;
 					break;
@@ -307,7 +324,7 @@ namespace ZDay {
 					c.Dexterity = 6;
 					c.Constitution = 8;
 					c.Intelligence = 4;
-					c.AttackDie = 4;
+					c.AttackDie = 1;
 					c.AttackMultiplier = 1;
 					c.AttackModifier = 0;
 					c.Defense = 5;

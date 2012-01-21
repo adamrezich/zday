@@ -73,6 +73,7 @@ namespace ZDay {
 					case TCODKeyCode.KeypadDecimal:
 					case TCODKeyCode.KeypadFive:
 						if (Player.Stamina < Player.MaxStamina) Player.Stamina = Math.Min(Player.Stamina + 10, Player.MaxStamina);
+						if (Player.HP < Player.MaxHP && Game.Current.RNG.Next(8) == 0) Player.HP = Math.Min(Player.HP + 1, Player.MaxHP);
 						break;
 					case TCODKeyCode.Enter:
 						if (TCODConsole.isKeyPressed(TCODKeyCode.Alt)) TCODConsole.setFullscreen(!TCODConsole.isFullscreen());
