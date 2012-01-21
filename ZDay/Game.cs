@@ -6,24 +6,20 @@ using libtcod;
 
 namespace ZDay {
 	class Game {
+		public static Game Current;
 		public bool Over = false;
-		List<Character> Characters = new List<Character>();
-		Character player;
-		Area currentArea;
+		public Character Player;
+		public List<Character> Characters = new List<Character>();
+		public Random RNG = new Random();
 
 		public Game() {
+		}
+
+		public void Initialize() {
+			Area.Current = new Area();
+			Area.Current.Generate();
 			Console.Lines = new List<ConsoleLine>();
-			player = new Character();
-			player.Position = new Point(8, 8);
-			player.Symbol = '@';
-			Character test = new Character();
-			test.Symbol = '!';
-			test.ForegroundColor = TCODColor.red;
-			test.Position = new Point(4, 4);
-			currentArea = new Area();
-			currentArea.LoadFromFile("Map01.txt");
-			Characters.Add(player);
-			Characters.Add(test);
+			Player = Character.Generate(Character.Prefab.Player, new Point(4, 4));
 		}
 
 		public void Play() {
@@ -36,7 +32,7 @@ namespace ZDay {
 
 		public void Update() {
 			var key = TCODConsole.waitForKeypress(true);
-			Point dest = new Point(player.Position.X, player.Position.Y);
+			Point dest = new Point(Player.Position.X, Player.Position.Y);
 			switch (key.KeyCode) {
 				case TCODKeyCode.Escape:
 					Over = true;
@@ -75,20 +71,16 @@ namespace ZDay {
 					break;
 				case TCODKeyCode.KeypadDecimal:
 				case TCODKeyCode.KeypadFive:
-					if (player.Stamina < player.MaxStamina) player.Stamina++;
+					if (Player.Stamina < Player.MaxStamina) Player.Stamina++;
 					break;
 				case TCODKeyCode.Enter:
 					if (TCODConsole.isKeyPressed(TCODKeyCode.Alt)) TCODConsole.setFullscreen(!TCODConsole.isFullscreen());
 					break;
-				case TCODKeyCode.Space:
-					player.Kills++;
-					player.XP += 17;
-					Console.WriteLine("You pump your fist into the air and miraculously feel slightly more experienced as a result!");
-					break;
 			}
-			if ((dest.X != player.Position.X || dest.Y != player.Position.Y) && player.Stamina > 0) {
-				player.Position = dest;
-				player.Stamina--;
+			if ((dest.X != Player.Position.X || dest.Y != Player.Position.Y) && Player.Stamina > 0) {
+				//player.Position = dest;
+				Player.MoveToPosition(dest);
+				Player.Stamina--;
 			}
 		}
 
@@ -112,34 +104,34 @@ namespace ZDay {
 			r.printFrame(vWidth, 0, windowWidth - vWidth, characterBoxHeight);
 			r.print(vWidth + 2, 0, "CHARACTER");
 			r.print(vWidth + 2, 2, "Adam");
-			r.print(vWidth + 2, 3, "LVL: " + Convert.ToString(player.Level));
+			r.print(vWidth + 2, 3, "LVL: " + Convert.ToString(Player.Level));
 			r.print(vWidth + 2, 4, "ATK: d4");
 
-			float barHP = ((float)player.HP / (float)player.MaxHP) * (windowWidth - vWidth - 4);
-			float barStamina = ((float)player.Stamina / (float)player.MaxStamina) * (windowWidth - vWidth - 4);
-			float barXP = ((float)(player.XP - Character.LevelXP(player.Level)) / (float)(Character.LevelXP(player.Level + 1) - Character.LevelXP(player.Level))) * (windowWidth - vWidth - 4);
+			float barHP = ((float)Player.HP / (float)Player.MaxHP) * (windowWidth - vWidth - 4);
+			float barStamina = ((float)Player.Stamina / (float)Player.MaxStamina) * (windowWidth - vWidth - 4);
+			float barXP = ((float)(Player.XP - Character.LevelXP(Player.Level)) / (float)(Character.LevelXP(Player.Level + 1) - Character.LevelXP(Player.Level))) * (windowWidth - vWidth - 4);
 
 			r.setBackgroundFlag(TCODBackgroundFlag.Set);
 			r.setBackgroundColor(TCODColor.darkGreen);
 			r.rect(vWidth + 2, 6, (int)barHP, 1, false);
 			r.setBackgroundColor(TCODColor.grey);
-			r.printEx(vWidth + 2 + ((windowWidth - vWidth - 4) / 2), 6, TCODBackgroundFlag.Darken, TCODAlignment.CenterAlignment, " HP: " + Convert.ToString(player.HP) + "/" + Convert.ToString(player.MaxHP) + " ");
+			r.printEx(vWidth + 2 + ((windowWidth - vWidth - 4) / 2), 6, TCODBackgroundFlag.Darken, TCODAlignment.CenterAlignment, " HP: " + Convert.ToString(Player.HP) + "/" + Convert.ToString(Player.MaxHP) + " ");
 			r.setBackgroundColor(TCODColor.darkBlue);
 			r.rect(vWidth + 2, 7, (int)barStamina, 1, false);
 			r.setBackgroundColor(TCODColor.grey);
-			r.printEx(vWidth + 2 + ((windowWidth - vWidth - 4) / 2), 7, TCODBackgroundFlag.Darken, TCODAlignment.CenterAlignment, " STM: " + Convert.ToString(Math.Round((float)player.Stamina / (float)player.MaxStamina * 100)) + "%% ");
+			r.printEx(vWidth + 2 + ((windowWidth - vWidth - 4) / 2), 7, TCODBackgroundFlag.Darken, TCODAlignment.CenterAlignment, " STM: " + Convert.ToString(Math.Round((float)Player.Stamina / (float)Player.MaxStamina * 100)) + "%% ");
 			r.setBackgroundColor(TCODColor.darkYellow);
 			r.rect(vWidth + 2, 8, (int)barXP, 1, false);
 			r.setBackgroundColor(TCODColor.grey);
-			r.printEx(vWidth + 2 + ((windowWidth - vWidth - 4) / 2), 8, TCODBackgroundFlag.Darken, TCODAlignment.CenterAlignment, " XP: " + Convert.ToString(player.XP) + " / " + Convert.ToString(Character.LevelXP(player.Level + 1)) + " ");
+			r.printEx(vWidth + 2 + ((windowWidth - vWidth - 4) / 2), 8, TCODBackgroundFlag.Darken, TCODAlignment.CenterAlignment, " XP: " + Convert.ToString(Player.XP) + " / " + Convert.ToString(Character.LevelXP(Player.Level + 1)) + " ");
 			r.setBackgroundColor(TCODColor.black);
 
-			r.print(vWidth + 16, 2, "STR: " + Convert.ToString(player.Strength));
-			r.print(vWidth + 16, 3, "DEX: " + Convert.ToString(player.Dexterity));
-			r.print(vWidth + 24, 2, "CON: " + Convert.ToString(player.Constitution));
-			r.print(vWidth + 24, 3, "INT: " + Convert.ToString(player.Intelligence));
-			r.print(vWidth + 16, 4, "DEF: " + Convert.ToString(player.Defense));
-			r.print(vWidth + 24, 4, "SPD: " + Convert.ToString(player.Speed));
+			r.print(vWidth + 16, 2, "STR: " + Convert.ToString(Player.Strength));
+			r.print(vWidth + 16, 3, "DEX: " + Convert.ToString(Player.Dexterity));
+			r.print(vWidth + 24, 2, "CON: " + Convert.ToString(Player.Constitution));
+			r.print(vWidth + 24, 3, "INT: " + Convert.ToString(Player.Intelligence));
+			r.print(vWidth + 16, 4, "DEF: " + Convert.ToString(Player.Defense));
+			r.print(vWidth + 24, 4, "SPD: " + Convert.ToString(Player.Speed));
 
 
 			// console box
@@ -180,7 +172,7 @@ namespace ZDay {
 
 			// time box
 			r.printFrame(vWidth + weaponBoxWidth, windowHeight - weaponBoxHeight, windowWidth - vWidth - weaponBoxWidth, weaponBoxHeight);
-			string strKilled = Convert.ToString(player.Kills) + " KILLED";
+			string strKilled = Convert.ToString(Player.Kills) + " KILLED";
 			string strTime = "DAY 1 00:00.00";
 			r.print(80 - strKilled.Length - 1, 48, strKilled);
 			r.print(80 - strTime.Length - 1, 47, strTime);
@@ -189,14 +181,18 @@ namespace ZDay {
 		public void Draw() {
 			TCODConsole r = TCODConsole.root;
 			r.clear();
+
+			// world box
 			r.printFrame(0, 0, 47, 47);
-			Point offset = new Point(player.Position.X - 22, player.Position.Y - 22);
-			foreach (Terrain t in currentArea.Terrain) {
+			r.print(2, 0, "Z-DAY v0.01");
+			Point offset = new Point(Player.Position.X - 22, Player.Position.Y - 22);
+			foreach (Terrain t in Area.Current.Terrain) {
 				t.Draw(TCODConsole.root, offset);
 			}
-			foreach (Character c in Characters) {
+			foreach (Character c in Area.Current.Characters) {
 				c.Draw(TCODConsole.root, offset);
 			}
+
 			DrawHUD();
 			TCODConsole.flush();
 		}

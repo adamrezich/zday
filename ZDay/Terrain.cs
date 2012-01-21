@@ -19,10 +19,12 @@ namespace ZDay {
 			switch (type) {
 				case TerrainType.Floor:
 					Symbol = '.';
+					Solid = false;
 					ForegroundColor = TCODColor.darkGrey;
 					break;
 				case TerrainType.Wall:
 					Symbol = '#';
+					Solid = true;
 					break;
 			}
 		}

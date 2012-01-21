@@ -6,11 +6,13 @@ using libtcod;
 
 namespace ZDay {
 	class Entity {
+		public Area Area;
 		public char Symbol = '?';
 		public TCODColor ForegroundColor = TCODColor.white;
 		public TCODColor BackgroundColor = TCODColor.red;
 		public bool OverrideBackgroundColor = false;
 		public Point Position = new Point(0, 0);
+		public bool Solid = true;
 
 		public void Draw(TCODConsole console, Point offset) {
 			if (Position.X > offset.X && Position.X <= offset.X + 45 && Position.Y > offset.Y && Position.Y <= offset.Y + 45) {
