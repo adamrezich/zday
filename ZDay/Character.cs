@@ -126,9 +126,11 @@ namespace ZDay {
 			if (attackTotal > target.Defense) {
 				int damage = 1 + Game.Current.RNG.Next(Attack);
 				if (attackRoll == 20) damage = Attack + Attack / 2;
-				//target.HP -= damage;
+				Stamina = Math.Max(Stamina - 40, 0);
+				target.HP -= damage;
 				Console.WriteLine((attackRoll == 20 ? "Critical hit! " : "") + (this == Game.Current.Player ? "You do " : ToString() + " does ") + damage.ToString() + " damage to " + target.ToString() + (target.HP <= 0 ? ", killing it." : "."));
 				if (target.HP <= 0) {
+					XP += target.HP / 2;
 					target.Kill();
 					Kills++;
 				}

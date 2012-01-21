@@ -71,7 +71,7 @@ namespace ZDay {
 					break;
 				case TCODKeyCode.KeypadDecimal:
 				case TCODKeyCode.KeypadFive:
-					if (Player.Stamina < Player.MaxStamina) Player.Stamina++;
+					if (Player.Stamina < Player.MaxStamina) Player.Stamina = Math.Min(Player.Stamina + 10, Player.MaxStamina);
 					break;
 				case TCODKeyCode.Enter:
 					if (TCODConsole.isKeyPressed(TCODKeyCode.Alt)) TCODConsole.setFullscreen(!TCODConsole.isFullscreen());
@@ -134,6 +134,7 @@ namespace ZDay {
 			r.print(vWidth + 24, 4, "SPD: " + Convert.ToString(Player.Speed));
 
 
+
 			// console box
 			r.printFrame(vWidth, characterBoxHeight, windowWidth - vWidth, windowHeight - weaponBoxHeight - characterBoxHeight);
 			r.print(vWidth + 2, characterBoxHeight, "CONSOLE");
@@ -163,6 +164,7 @@ namespace ZDay {
 				
 				i -= 1;
 			}
+
 
 
 			// weapon box
