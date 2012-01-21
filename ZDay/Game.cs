@@ -31,57 +31,59 @@ namespace ZDay {
 		}
 
 		public void Update() {
-			var key = TCODConsole.waitForKeypress(true);
-			Point dest = new Point(Player.Position.X, Player.Position.Y);
-			switch (key.KeyCode) {
-				case TCODKeyCode.Escape:
-					Over = true;
-					return;
-				case TCODKeyCode.KeypadFour:
-				case TCODKeyCode.Left:
-					dest.X--;
-					break;
-				case TCODKeyCode.KeypadEight:
-				case TCODKeyCode.Up:
-					dest.Y--;
-					break;
-				case TCODKeyCode.KeypadSix:
-				case TCODKeyCode.Right:
-					dest.X++;
-					break;
-				case TCODKeyCode.KeypadTwo:
-				case TCODKeyCode.Down:
-					dest.Y++;
-					break;
-				case TCODKeyCode.KeypadSeven:
-					dest.X--;
-					dest.Y--;
-					break;
-				case TCODKeyCode.KeypadNine:
-					dest.X++;
-					dest.Y--;
-					break;
-				case TCODKeyCode.KeypadOne:
-					dest.X--;
-					dest.Y++;
-					break;
-				case TCODKeyCode.KeypadThree:
-					dest.X++;
-					dest.Y++;
-					break;
-				case TCODKeyCode.KeypadDecimal:
-				case TCODKeyCode.KeypadFive:
-					if (Player.Stamina < Player.MaxStamina) Player.Stamina = Math.Min(Player.Stamina + 10, Player.MaxStamina);
-					break;
-				case TCODKeyCode.Enter:
-					if (TCODConsole.isKeyPressed(TCODKeyCode.Alt)) TCODConsole.setFullscreen(!TCODConsole.isFullscreen());
-					break;
+			if (Player.TurnTimeout == 0) {
+				var key = TCODConsole.waitForKeypress(true);
+				Point dest = new Point(Player.Position.X, Player.Position.Y);
+				switch (key.KeyCode) {
+					case TCODKeyCode.Escape:
+						Over = true;
+						return;
+					case TCODKeyCode.KeypadFour:
+					case TCODKeyCode.Left:
+						dest.X--;
+						break;
+					case TCODKeyCode.KeypadEight:
+					case TCODKeyCode.Up:
+						dest.Y--;
+						break;
+					case TCODKeyCode.KeypadSix:
+					case TCODKeyCode.Right:
+						dest.X++;
+						break;
+					case TCODKeyCode.KeypadTwo:
+					case TCODKeyCode.Down:
+						dest.Y++;
+						break;
+					case TCODKeyCode.KeypadSeven:
+						dest.X--;
+						dest.Y--;
+						break;
+					case TCODKeyCode.KeypadNine:
+						dest.X++;
+						dest.Y--;
+						break;
+					case TCODKeyCode.KeypadOne:
+						dest.X--;
+						dest.Y++;
+						break;
+					case TCODKeyCode.KeypadThree:
+						dest.X++;
+						dest.Y++;
+						break;
+					case TCODKeyCode.KeypadDecimal:
+					case TCODKeyCode.KeypadFive:
+						if (Player.Stamina < Player.MaxStamina) Player.Stamina = Math.Min(Player.Stamina + 10, Player.MaxStamina);
+						break;
+					case TCODKeyCode.Enter:
+						if (TCODConsole.isKeyPressed(TCODKeyCode.Alt)) TCODConsole.setFullscreen(!TCODConsole.isFullscreen());
+						break;
+				}
+				if ((dest.X != Player.Position.X || dest.Y != Player.Position.Y) && Player.Stamina > 0) {
+					Player.MoveToPosition(dest);
+					Player.Stamina--;
+					Player.TurnTimeout += 5 - Player.Speed;
+				}
 			}
-			if ((dest.X != Player.Position.X || dest.Y != Player.Position.Y) && Player.Stamina > 0) {
-				Player.MoveToPosition(dest);
-				Player.Stamina--;
-			}
-
 			foreach (Character c in Area.Current.Characters) {
 				c.Update();
 			}
@@ -190,12 +192,15 @@ namespace ZDay {
 			// world box
 			r.printFrame(0, 0, 47, 47);
 			r.print(2, 0, "Z-DAY v0.01");
-			Point offset = new Point(Player.Position.X - 22, Player.Position.Y - 22);
+			Point offset = new Point(Player.Position.X - 23, Player.Position.Y - 23);
+			Area.Current.Map.computeFov(Player.Position.X, Player.Position.Y, Player.ViewRadius, true, TCODFOVTypes.BasicFov);
 			foreach (Terrain t in Area.Current.Terrain) {
-				t.Draw(TCODConsole.root, offset);
+				if (Area.Current.Map.isInFov(t.Position.X, t.Position.Y))
+					t.Draw(TCODConsole.root, offset);
 			}
 			foreach (Character c in Area.Current.Characters) {
-				c.Draw(TCODConsole.root, offset);
+				//if (Area.Current.Map.isInFov(c.Position.X, c.Position.Y))
+					c.Draw(TCODConsole.root, offset);
 			}
 
 			DrawHUD();

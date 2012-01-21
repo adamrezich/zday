@@ -24,6 +24,11 @@ namespace ZDay {
 			Hostile
 		}
 
+		public enum AITypes {
+			None,
+			Zombie
+		}
+
 		public int Level {
 			get {
 				if (XP >= 1500) return 7;
@@ -54,7 +59,13 @@ namespace ZDay {
 		public int Defense = 8;
 		public int Speed = 4;
 
-		//public TCODMap Map;
+		public int ViewRadius = 22;
+
+		public int TurnTimeout = 0;
+		public Character Target;
+
+		public AITypes AIType = AITypes.None;
+
 		public TCODPath Pathfinder;
 
 		public int Infection = 0;
@@ -74,17 +85,53 @@ namespace ZDay {
 		}
 
 		public void Update() {
-			if (this != Game.Current.Player) {
-				if (Game.Current.Player != null && Pathfinder.isEmpty())
-					Pathfinder.compute(Position.X, Position.Y, Game.Current.Player.Position.X, Game.Current.Player.Position.Y);
-				Pathfinder.walk(ref Position.X, ref Position.Y, true);
-				int x, y;
-				Pathfinder.getDestination(out x, out y);
-				Console.WriteLine(x.ToString() + ", " + y.ToString());
-			}
 			if (LastLevel < Level) {
 				LevelUp();
 				LastLevel = Level;
+			}
+			if (TurnTimeout > 0) {
+				TurnTimeout--;
+				return;
+			}
+			if (AIType == AITypes.Zombie) {
+				// Don't have a target? Let's find one!
+				bool computedFOV = false;
+				if (Target == null) {
+					if (!computedFOV) {
+						Area.Current.Map.computeFov(Position.X, Position.Y, ViewRadius, true, TCODFOVTypes.BasicFov);
+						computedFOV = true;
+					}
+					if (Area.Current.Map.isInFov(Game.Current.Player.Position.X, Game.Current.Player.Position.Y)) Target = Game.Current.Player;
+				}
+
+				// Is our target dead or something?
+				if (Target != null && Target.HP < 1) Target = null;
+
+				// OK, so we're chasing a target... can we still see him?
+				if (Target != null) {
+					if (!computedFOV) {
+						Area.Current.Map.computeFov(Position.X, Position.Y, ViewRadius, true, TCODFOVTypes.BasicFov);
+						computedFOV = true;
+					}
+					if (Area.Current.Map.isInFov(Target.Position.X, Target.Position.Y)) {
+						Pathfinder.compute(Position.X, Position.Y, Target.Position.X, Target.Position.Y);
+					}
+				}
+
+				if (Pathfinder.size() > 1) {
+					int x, x2 = Position.X;
+					int y, y2 = Position.Y;
+					Pathfinder.get(0, out x, out y);
+					MoveToPosition(new Point(x, y));
+					if (Position.X == x && Position.Y == y) Pathfinder.walk(ref x2, ref y2, true);
+					TurnTimeout += 5 - Speed;
+				}
+				int dx, dy;
+				Pathfinder.getDestination(out dx, out dy);
+				if (Pathfinder.size() < 2 && Target != null && Target.Position.X == dx && Target.Position.Y == dy) {
+					MeleeAttack(Target);
+					TurnTimeout += 2;
+				}
 			}
 		}
 
@@ -142,7 +189,7 @@ namespace ZDay {
 
 		public void MeleeAttack(Character target) {
 			int attackRoll = 1 + Game.Current.RNG.Next(20);
-			int attackTotal = attackRoll + Character.StatToModifier(Strength);
+			int attackTotal = attackRoll + Character.StatToModifier(Dexterity);
 			if (attackTotal > target.Defense) {
 				int damage = 0;
 				for (int i = 0; i < AttackMultiplier; i++) damage += (attackRoll == 20 ? damage = AttackDie + AttackDie / 2 : 1 + Game.Current.RNG.Next(AttackDie));
@@ -150,7 +197,7 @@ namespace ZDay {
 				if (attackRoll == 20) damage += damage / 2;
 				Stamina = Math.Max(Stamina - 40, 0);
 				target.HP -= damage;
-				Console.WriteLine((attackRoll == 20 ? "Critical hit! " : "") + (this == Game.Current.Player ? "You do " : ToString() + " does ") + damage.ToString() + " damage to " + target.ToString() + (target.HP <= 0 ? ", killing it." : "."));
+				Console.WriteLine((attackRoll == 20 ? "Critical hit! " : "") + (this == Game.Current.Player ? "You do " : ToString() + " does ") + damage.ToString() + " damage to " + (target == Game.Current.Player ? "you" : target.ToString()) + (target.HP <= 0 ? ", killing " + (target == Game.Current.Player ? "you" : "it") + "." : "."));
 				if (target.HP <= 0) {
 					XP += target.HP / 2;
 					target.Kill();
@@ -159,11 +206,12 @@ namespace ZDay {
 				XP += damage;
 			}
 			else {
-				Console.WriteLine((this == Game.Current.Player ? "You swing" : ToString() + " swings") + " at " + (this == Game.Current.Player ? target.ToString() : "you") + ", but " + (this == Game.Current.Player ? "miss." : "misses."));
+				Console.WriteLine((this == Game.Current.Player ? "You swing" : ToString() + " swings") + " at " + (target == Game.Current.Player ? "you" : target.ToString()) + ", but " + (this == Game.Current.Player ? "miss." : "misses."));
 			}
 		}
 
 		public void Kill() {
+			Pathfinder.Dispose();
 			Game.Current.Characters.Remove(this);
 		}
 
@@ -179,9 +227,22 @@ namespace ZDay {
 			Character c = new Character();
 			switch (prefab) {
 				case Prefab.Player:
+					c.Name = "Adam";
 					c.Symbol = '@';
 					c.Infection = 0;
 					c.Faction = Factions.Survivors;
+					c.Strength = 14;
+					c.Dexterity = 12;
+					c.Constitution = 12;
+					c.Intelligence = 12;
+					c.AttackDie = 8;
+					c.AttackMultiplier = 1;
+					c.AttackModifier = 0;
+					c.Defense = 8;
+					c.Speed = 3;
+					c.MaxHP = 200;
+					c.HP = c.MaxHP;
+					c.ViewRadius = 23;
 					break;
 				case Prefab.Survivor:
 					c.Symbol = '@';
@@ -194,16 +255,18 @@ namespace ZDay {
 					c.Infection = 100;
 					c.Faction = Factions.Undead;
 					c.Strength = 14;
-					c.Dexterity = 8;
+					c.Dexterity = 6;
 					c.Constitution = 8;
 					c.Intelligence = 4;
-					c.AttackDie = 6;
+					c.AttackDie = 4;
 					c.AttackMultiplier = 1;
 					c.AttackModifier = 0;
 					c.Defense = 5;
 					c.Speed = 1;
 					c.MaxHP = 15;
 					c.HP = c.MaxHP;
+					c.AIType = AITypes.Zombie;
+					c.ViewRadius = 14;
 					break;
 			}
 			c.Area = Area.Current;
