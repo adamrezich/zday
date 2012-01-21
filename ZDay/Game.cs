@@ -87,6 +87,16 @@ namespace ZDay {
 			foreach (Character c in Area.Current.Characters) {
 				c.Update();
 			}
+			if (Player.HP < 1) {
+				Console.WriteLine("GAME OVER");
+				Draw();
+				while (true) {
+					if (TCODConsole.waitForKeypress(true).KeyCode == TCODKeyCode.Escape) {
+						Over = true;
+						break;
+					}
+				}
+			}
 		}
 
 		public void DrawHUD() {

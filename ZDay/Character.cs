@@ -235,12 +235,12 @@ namespace ZDay {
 					c.Dexterity = 12;
 					c.Constitution = 12;
 					c.Intelligence = 12;
-					c.AttackDie = 8;
+					c.AttackDie = 4;
 					c.AttackMultiplier = 1;
 					c.AttackModifier = 0;
 					c.Defense = 8;
 					c.Speed = 3;
-					c.MaxHP = 200;
+					c.MaxHP = 20;
 					c.HP = c.MaxHP;
 					c.ViewRadius = 23;
 					break;
