@@ -114,7 +114,20 @@ namespace ZDay {
 						computedFOV = true;
 					}
 					if (Area.Current.Map.isInFov(Target.Position.X, Target.Position.Y)) {
-						Pathfinder.compute(Position.X, Position.Y, Target.Position.X, Target.Position.Y);
+						foreach (Character c in Area.Current.Characters) {
+							if (c != this && c != Target) Area.Current.Map.setProperties(c.Position.X, c.Position.Y, true, false);
+						}
+						if (!Pathfinder.compute(Position.X, Position.Y, Target.Position.X, Target.Position.Y)) {
+							foreach (Character c in Area.Current.Characters) {
+								Area.Current.Map.setProperties(c.Position.X, c.Position.Y, true, true);
+							}
+							Pathfinder.compute(Position.X, Position.Y, Target.Position.X, Target.Position.Y);
+						}
+						else {
+							foreach (Character c in Area.Current.Characters) {
+								Area.Current.Map.setProperties(c.Position.X, c.Position.Y, true, true);
+							}
+						}
 					}
 				}
 
@@ -131,6 +144,10 @@ namespace ZDay {
 				if (Pathfinder.size() < 2 && Target != null && Target.Position.X == dx && Target.Position.Y == dy) {
 					MeleeAttack(Target);
 					TurnTimeout += 2;
+				}
+
+				if (Target == null && Pathfinder.isEmpty()) {
+					Wander();
 				}
 			}
 		}
@@ -210,6 +227,22 @@ namespace ZDay {
 			}
 		}
 
+		public void Wander() {
+			Point dest = new Point(0, 0);
+			switch (Game.Current.RNG.Next(9)) {
+				case 0: dest = new Point(1, 0); break;
+				case 1: dest = new Point(1, -1); break;
+				case 2: dest = new Point(0, -1); break;
+				case 3: dest = new Point(-1, -1); break;
+				case 4: dest = new Point(-1, 0); break;
+				case 5: dest = new Point(-1, 1); break;
+				case 6: dest = new Point(0, 1); break;
+				case 7: dest = new Point(1, 1); break;
+			}
+			MoveToPosition(new Point(Position.X + dest.X, Position.Y + dest.Y));
+			TurnTimeout += 5 - Speed - 1 + Game.Current.RNG.Next(3);
+		}
+
 		public void Kill() {
 			Pathfinder.Dispose();
 			Game.Current.Characters.Remove(this);
@@ -238,8 +271,8 @@ namespace ZDay {
 					c.AttackDie = 4;
 					c.AttackMultiplier = 1;
 					c.AttackModifier = 0;
-					c.Defense = 8;
-					c.Speed = 3;
+					c.Defense = 20;
+					c.Speed = 2;
 					c.MaxHP = 20;
 					c.HP = c.MaxHP;
 					c.ViewRadius = 23;
