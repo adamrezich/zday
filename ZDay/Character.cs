@@ -123,9 +123,10 @@ namespace ZDay {
 		public void MeleeAttack(Character target) {
 			if (Game.Current.RNG.Next(20) + Character.StatToModifier(Strength) > target.Defense) {
 				int damage = 1 + Game.Current.RNG.Next(Attack);
-				Console.WriteLine((this == Game.Current.Player ? "You do " : ToString() + " does ") + damage.ToString() + " damage to " + target.ToString() + ".");
+				target.HP -= damage;
+				Console.WriteLine((this == Game.Current.Player ? "You do " : ToString() + " does ") + damage.ToString() + " damage to " + target.ToString() + (target.HP <= 0 ? ", killing it." : "."));
+				if (target.HP <= 0) target.Kill();
 			}
-			//character.Kill();
 		}
 
 		public void Kill() {
