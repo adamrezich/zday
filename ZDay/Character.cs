@@ -121,11 +121,21 @@ namespace ZDay {
 		}
 
 		public void MeleeAttack(Character target) {
-			if (Game.Current.RNG.Next(20) + Character.StatToModifier(Strength) > target.Defense) {
+			int attackRoll = 1 + Game.Current.RNG.Next(20);
+			int attackTotal = attackRoll + Character.StatToModifier(Strength);
+			if (attackTotal > target.Defense) {
 				int damage = 1 + Game.Current.RNG.Next(Attack);
-				target.HP -= damage;
-				Console.WriteLine((this == Game.Current.Player ? "You do " : ToString() + " does ") + damage.ToString() + " damage to " + target.ToString() + (target.HP <= 0 ? ", killing it." : "."));
-				if (target.HP <= 0) target.Kill();
+				if (attackRoll == 20) damage = Attack + Attack / 2;
+				//target.HP -= damage;
+				Console.WriteLine((attackRoll == 20 ? "Critical hit! " : "") + (this == Game.Current.Player ? "You do " : ToString() + " does ") + damage.ToString() + " damage to " + target.ToString() + (target.HP <= 0 ? ", killing it." : "."));
+				if (target.HP <= 0) {
+					target.Kill();
+					Kills++;
+				}
+				XP += damage;
+			}
+			else {
+				Console.WriteLine((this == Game.Current.Player ? "You swing" : ToString() + " swings") + " at " + (this == Game.Current.Player ? target.ToString() : "you") + ", but " + (this == Game.Current.Player ? "miss." : "misses."));
 			}
 		}
 
