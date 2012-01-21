@@ -12,7 +12,8 @@ namespace ZDay {
 		public TCODColor BackgroundColor;
 		public bool OverrideBackgroundColor = false;
 		public Point Position = new Point(0, 0);
-		public bool Solid = true;
+		public bool Solid = false;
+		public bool Transparent = true;
 		public string Name;
 
 		public void Draw(TCODConsole console, Point offset) {

@@ -82,6 +82,10 @@ namespace ZDay {
 				Player.MoveToPosition(dest);
 				Player.Stamina--;
 			}
+
+			foreach (Character c in Area.Current.Characters) {
+				c.Update();
+			}
 		}
 
 		public void DrawHUD() {
@@ -105,7 +109,7 @@ namespace ZDay {
 			r.print(vWidth + 2, 0, "CHARACTER");
 			r.print(vWidth + 2, 2, "Adam");
 			r.print(vWidth + 2, 3, "LVL: " + Convert.ToString(Player.Level));
-			r.print(vWidth + 2, 4, "ATK: d4");
+			r.print(vWidth + 2, 4, "ATK: " + (Player.AttackMultiplier > 1 ? Player.AttackMultiplier.ToString() : "") + "d" + Player.AttackDie.ToString() + (Player.AttackModifier > 0 ? "+" + Player.AttackModifier.ToString() : ""));
 
 			float barHP = ((float)Player.HP / (float)Player.MaxHP) * (windowWidth - vWidth - 4);
 			float barStamina = ((float)Player.Stamina / (float)Player.MaxStamina) * (windowWidth - vWidth - 4);

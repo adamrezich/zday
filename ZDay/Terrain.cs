@@ -20,6 +20,7 @@ namespace ZDay {
 				case TerrainType.Floor:
 					Symbol = '.';
 					Solid = false;
+					Transparent = true;
 					ForegroundColor = TCODColor.darkGrey;
 					break;
 				case TerrainType.Wall:
@@ -27,6 +28,7 @@ namespace ZDay {
 					ForegroundColor = TCODColor.darkerGrey;
 					BackgroundColor = TCODColor.lightGrey;
 					Solid = true;
+					Transparent = false;
 					break;
 			}
 		}

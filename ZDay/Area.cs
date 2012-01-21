@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using libtcod;
 
 namespace ZDay {
 	class Area {
 		public static Area Current;
 		public List<Terrain> Terrain = new List<Terrain>();
+
+		public int Height;
+		public int Width;
+		public TCODMap Map;
 
 		public List<Character> Characters {
 			get {
@@ -65,6 +70,12 @@ namespace ZDay {
 					pos.X = 0;
 					pos.Y++;
 				}
+			}
+			Width = pos.X - 1;
+			Height = pos.Y - 1;
+			Map = new TCODMap(Width, Height);
+			foreach (Terrain t in Terrain) {
+				Map.setProperties(t.Position.X, t.Position.Y, t.Transparent, !t.Solid);
 			}
 		}
 	}

@@ -35,6 +35,8 @@ namespace ZDay {
 				return 1;
 			}
 		}
+		public int LastLevel;
+
 		public int XP = 0;
 		public int HP = 10;
 		public int MaxHP = 10;
@@ -46,25 +48,34 @@ namespace ZDay {
 		public int Dexterity = 10;
 		public int Constitution = 10;
 		public int Intelligence = 10;
-		public int Attack {
-			get {
-				return 4;
-			}
-		}
-		public int Defense = 2;
+		public int AttackDie = 4;
+		public int AttackMultiplier = 1;
+		public int AttackModifier = 0;
+		public int Defense = 8;
 		public int Speed = 4;
+
+		//public TCODMap Map;
+		public TCODPath Pathfinder;
 
 		public int Infection = 0;
 
 		public Factions Faction;
 
 		public Character() {
+			LastLevel = Level;
 			Game.Current.Characters.Add(this);
 		}
 
 		public bool IsZombie {
 			get {
 				return (Infection == 100);
+			}
+		}
+
+		public void Update() {
+			if (LastLevel < Level) {
+				LevelUp();
+				LastLevel = Level;
 			}
 		}
 
@@ -124,8 +135,10 @@ namespace ZDay {
 			int attackRoll = 1 + Game.Current.RNG.Next(20);
 			int attackTotal = attackRoll + Character.StatToModifier(Strength);
 			if (attackTotal > target.Defense) {
-				int damage = 1 + Game.Current.RNG.Next(Attack);
-				if (attackRoll == 20) damage = Attack + Attack / 2;
+				int damage = 0;
+				for (int i = 0; i < AttackMultiplier; i++) damage += (attackRoll == 20 ? damage = AttackDie + AttackDie / 2 : 1 + Game.Current.RNG.Next(AttackDie));
+				damage += AttackModifier;
+				if (attackRoll == 20) damage += damage / 2;
 				Stamina = Math.Max(Stamina - 40, 0);
 				target.HP -= damage;
 				Console.WriteLine((attackRoll == 20 ? "Critical hit! " : "") + (this == Game.Current.Player ? "You do " : ToString() + " does ") + damage.ToString() + " damage to " + target.ToString() + (target.HP <= 0 ? ", killing it." : "."));
@@ -143,6 +156,10 @@ namespace ZDay {
 
 		public void Kill() {
 			Game.Current.Characters.Remove(this);
+		}
+
+		public void LevelUp() {
+			if (this == Game.Current.Player) Console.WriteLine("You level up!");
 		}
 
 		public static int StatToModifier(int stat) {
@@ -167,6 +184,17 @@ namespace ZDay {
 					c.ForegroundColor = TCODColor.desaturatedGreen;
 					c.Infection = 100;
 					c.Faction = Factions.Undead;
+					c.Strength = 14;
+					c.Dexterity = 8;
+					c.Constitution = 8;
+					c.Intelligence = 4;
+					c.AttackDie = 6;
+					c.AttackMultiplier = 1;
+					c.AttackModifier = 0;
+					c.Defense = 5;
+					c.Speed = 1;
+					c.MaxHP = 15;
+					c.HP = c.MaxHP;
 					break;
 			}
 			c.Area = Area.Current;
