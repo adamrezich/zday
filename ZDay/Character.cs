@@ -53,11 +53,18 @@ namespace ZDay {
 		public int Dexterity = 10;
 		public int Constitution = 10;
 		public int Intelligence = 10;
-		public int AttackDie = 4;
+		public int AttackDie {
+			get {
+				return (Weapon == null ? 4 : Weapon.AttackDie);
+			}
+		}
 		public int AttackMultiplier = 1;
 		public int AttackModifier = 0;
 		public int Defense = 8;
 		public int Speed = 4;
+
+		public Item Weapon;
+
 
 		private int idleTimer = 0;
 
@@ -239,7 +246,7 @@ namespace ZDay {
 
 		public void MeleeAttack(Character target) {
 			int attackRoll = 1 + Game.Current.RNG.Next(20);
-			int attackTotal = attackRoll + Character.StatToModifier(Dexterity);
+			int attackTotal = attackRoll + Character.StatToModifier(Strength);
 			if (attackTotal > target.Defense) {
 				int damage = 0;
 				for (int i = 0; i < AttackMultiplier; i++) damage += (attackRoll == 20 ? damage = AttackDie + AttackDie / 2 : 1 + Game.Current.RNG.Next(AttackDie));
@@ -297,13 +304,12 @@ namespace ZDay {
 					c.Symbol = '@';
 					c.Infection = 0;
 					c.Faction = Factions.Survivors;
-					c.Strength = 14;
+					c.Strength = 12;
 					c.Dexterity = 12;
 					c.Constitution = 12;
 					c.Intelligence = 12;
-					c.AttackDie = 4;
 					c.AttackMultiplier = 1;
-					c.AttackModifier = 0;
+					c.AttackModifier = 4;
 					c.Defense = 10;
 					c.Speed = 2;
 					c.MaxHP = 10;
@@ -320,16 +326,15 @@ namespace ZDay {
 					c.ForegroundColor = TCODColor.desaturatedGreen;
 					c.Infection = 100;
 					c.Faction = Factions.Undead;
-					c.Strength = 14;
+					c.Strength = 8;
 					c.Dexterity = 6;
-					c.Constitution = 8;
+					c.Constitution = 6;
 					c.Intelligence = 4;
-					c.AttackDie = 1;
 					c.AttackMultiplier = 1;
-					c.AttackModifier = 0;
-					c.Defense = 5;
+					c.AttackModifier = -2;
+					c.Defense = 10;
 					c.Speed = 1;
-					c.MaxHP = 15;
+					c.MaxHP = 6;
 					c.HP = c.MaxHP;
 					c.AIType = AITypes.Zombie;
 					c.ViewRadius = 14;

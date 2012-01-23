@@ -13,12 +13,12 @@ namespace ZDay {
 		public Random RNG = new Random();
 
 		public Game() {
+			Console.Lines = new List<ConsoleLine>();
+			Area.Current = new Area();
 		}
 
 		public void Initialize() {
-			Area.Current = new Area();
 			Area.Current.Generate();
-			Console.Lines = new List<ConsoleLine>();
 			Player = Character.Generate(Character.Prefab.Player, new Point(4, 4));
 		}
 
