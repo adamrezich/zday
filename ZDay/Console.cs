@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace ZDay {
-	class Console {
+	public class Console {
 		public static List<ConsoleLine> Lines = new List<ConsoleLine>();
 
 		public static void WriteLine(string text) {
@@ -12,7 +12,7 @@ namespace ZDay {
 		}
 	}
 
-	class ConsoleLine {
+	public class ConsoleLine {
 		public string Text;
 
 		public ConsoleLine(string text) {

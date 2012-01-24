@@ -5,7 +5,7 @@ using System.Text;
 using libtcod;
 
 namespace ZDay {
-	class Character : Entity {
+	public class Character : Entity {
 
 		public enum Prefab {
 			Player,

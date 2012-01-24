@@ -10,7 +10,7 @@ namespace ZDay {
 		Floor,
 		Wall
 	}
-	class Terrain : Entity {
+	public class Terrain : Entity {
 		public TerrainType Type;
 
 		public Terrain(Point position, TerrainType type) {

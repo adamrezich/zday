@@ -5,7 +5,7 @@ using System.Text;
 using libtcod;
 
 namespace ZDay {
-	class Game {
+	public class Game {
 		public static Game Current;
 		public bool Over = false;
 		public Character Player;
@@ -21,6 +21,9 @@ namespace ZDay {
 		public void Initialize() {
 			Area.Current.Generate();
 			Player = Character.Generate(Character.Prefab.Player, new Point(4, 4));
+			Player.Weapon = new Weapon();
+			Player.Weapon.AttackDie = 8;
+			Player.Weapon.Class = "baseball bat";
 		}
 
 		public void Play() {
@@ -115,6 +118,7 @@ namespace ZDay {
 
 			// bottom bar
 			r.printFrame(0, windowHeight - 3, windowWidth - sidebarWidth, 3);
+			r.printEx(vHeight / 2 + 1, windowHeight - 2, TCODBackgroundFlag.Default, TCODAlignment.CenterAlignment, Area.Current.DescribeTile(Player.Position));
 
 
 			// character box
@@ -186,7 +190,7 @@ namespace ZDay {
 
 			// weapon box
 			r.printFrame(vWidth, windowHeight - weaponBoxHeight, weaponBoxWidth, weaponBoxHeight);
-			r.print(vWidth + 1, windowHeight - weaponBoxHeight + 1, "unarmed");
+			r.print(vWidth + 1, windowHeight - weaponBoxHeight + 1, Player.Weapon == null ? "unarmed" : Player.Weapon.ToString());
 
 
 			// time box

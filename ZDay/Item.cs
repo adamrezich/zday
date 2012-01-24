@@ -5,7 +5,7 @@ using System.Text;
 using libtcod;
 
 namespace ZDay {
-	class Item : Entity {
+	public class Item : Entity {
 		public enum Prefab {
 			Corpse
 		}
@@ -29,6 +29,9 @@ namespace ZDay {
 		}
 	}
 
-	class Weapon : Item {
+	public class Weapon : Item {
+		public override string ToString() {
+			return Class;
+		}
 	}
 }

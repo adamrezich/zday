@@ -6,7 +6,7 @@ using System.Text;
 using libtcod;
 
 namespace ZDay {
-	class Area {
+	public class Area {
 		public static Area Current;
 		public List<Terrain> Terrain = new List<Terrain>();
 
@@ -25,9 +25,9 @@ namespace ZDay {
 
 		public List<Item> Items {
 			get {
-				IEnumerable<Item> q = from c in Game.Current.Items
-										   where c.Area == this
-										   select c;
+				IEnumerable<Item> q = from i in Game.Current.Items
+										   where i.Area == this
+										   select i;
 				return q.ToList<Item>();
 			}
 		}
@@ -85,6 +85,19 @@ namespace ZDay {
 			foreach (Terrain t in Terrain) {
 				Map.setProperties(t.Position.X, t.Position.Y, t.Transparent, !t.Solid);
 			}
+		}
+
+		public string DescribeTile(Point position) {
+			IEnumerable<Item> q = from i in Game.Current.Items
+								  where i.Area == this && i.Position == position
+								  select i;
+			List<Item> items = q.ToList<Item>();
+			if (items.Count == 1) {
+				string item = items[0].ToString();
+				return "There is " + English.SingularPronoun(item) + " " + item + " here.";
+			}
+			if (items.Count > 1) return "There are several things here.";
+			return "";
 		}
 	}
 }

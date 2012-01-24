@@ -56,4 +56,20 @@ namespace ZDay {
 			return (int)Math.Sqrt((X - p2.X) * (X - p2.X) + (Y - p2.Y) * (Y - p2.Y));
 		}
 	}
+
+	public static class English {
+		public static string SingularPronoun(string phrase) {
+			if (phrase == "" || phrase == null) return "";
+			switch (phrase.Substring(0, 1).ToLower()) {
+				case "a":
+				case "e":
+				case "i":
+				case "o":
+				case "u":
+					return "an";
+				default:
+					return "a";
+			}
+		}
+	}
 }
