@@ -9,6 +9,7 @@ namespace ZDay {
 	public class Area {
 		public static Area Current;
 		public List<Terrain> Terrain = new List<Terrain>();
+		public List<Decal> Decals = new List<Decal>();
 
 		public int Height;
 		public int Width;

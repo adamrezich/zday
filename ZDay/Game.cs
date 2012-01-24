@@ -214,12 +214,16 @@ namespace ZDay {
 				if (Area.Current.Map.isInFov(t.Position.X, t.Position.Y))
 					t.Draw(TCODConsole.root, offset);
 			}
+			foreach (Decal d in Area.Current.Decals) {
+				if (Area.Current.Map.isInFov(d.Position.X, d.Position.Y))
+					d.Draw(TCODConsole.root, offset);
+			}
 			foreach (Item i in Area.Current.Items) {
 				if (Area.Current.Map.isInFov(i.Position.X, i.Position.Y))
 				i.Draw(TCODConsole.root, offset);
 			}
 			foreach (Character c in Area.Current.Characters) {
-				//if (Area.Current.Map.isInFov(c.Position.X, c.Position.Y))
+				if (Area.Current.Map.isInFov(c.Position.X, c.Position.Y))
 					c.Draw(TCODConsole.root, offset);
 			}
 

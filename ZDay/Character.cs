@@ -179,6 +179,7 @@ namespace ZDay {
 					}
 				}
 
+				// Wander if you aren't attacking an enemy and have been standing still for too long
 				if (positionLast == Position) idleTimer += 1;
 				else idleTimer = 0;
 				if (idleTimer > 3) {
@@ -250,6 +251,7 @@ namespace ZDay {
 			if (attackTotal > target.Defense) {
 				int damage = 0;
 				for (int i = 0; i < AttackMultiplier; i++) damage += (attackRoll == 20 ? damage = AttackDie + AttackDie / 2 : 1 + Game.Current.RNG.Next(AttackDie));
+				target.Bleed();
 				damage = Math.Max(damage + AttackModifier, 1);
 				//if (attackRoll == 20) damage += damage / 2;
 				Stamina = Math.Max(Stamina - 40, 0);
@@ -281,6 +283,10 @@ namespace ZDay {
 			}
 			MoveToPosition(new Point(Position.X + dest.X, Position.Y + dest.Y));
 			TurnTimeout += 5 - Speed - 1 + Game.Current.RNG.Next(3);
+		}
+
+		public void Bleed() {
+			Decal.Generate(Decal.Prefabs.BloodDrops, Position);
 		}
 
 		public void Kill() {
