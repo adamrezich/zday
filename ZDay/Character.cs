@@ -98,6 +98,7 @@ namespace ZDay {
 				LevelUp();
 				LastLevel = Level;
 			}
+			if (HP <= MaxHP / 3 && Game.Current.RNG.Next(5) == 0) BleedDirectly();
 			if (TurnTimeout > 0) {
 				TurnTimeout--;
 				return;
@@ -286,6 +287,12 @@ namespace ZDay {
 		}
 
 		public void Bleed() {
+			Point p = Position;
+			if (Game.Current.RNG.Next(3) == 0) p += new Point(-1 + Game.Current.RNG.Next(3), -1 + Game.Current.RNG.Next(3));
+			Decal.Generate(Decal.Prefabs.BloodDrops, p);
+		}
+
+		public void BleedDirectly() {
 			Decal.Generate(Decal.Prefabs.BloodDrops, Position);
 		}
 
@@ -322,7 +329,7 @@ namespace ZDay {
 					c.Symbol = '@';
 					c.Infection = 0;
 					c.Faction = Factions.Survivors;
-					c.Strength = 12;
+					c.Strength = 16;
 					c.Dexterity = 12;
 					c.Constitution = 12;
 					c.Intelligence = 12;
@@ -330,7 +337,7 @@ namespace ZDay {
 					c.AttackModifier = 4;
 					c.Defense = 10;
 					c.Speed = 2;
-					c.MaxHP = 1000;
+					c.MaxHP = 10;
 					c.HP = c.MaxHP;
 					c.ViewRadius = 23;
 					break;
@@ -352,7 +359,7 @@ namespace ZDay {
 					c.AttackModifier = -2;
 					c.Defense = 10;
 					c.Speed = 1;
-					c.MaxHP = 6;
+					c.MaxHP = 10;
 					c.HP = c.MaxHP;
 					c.AIType = AITypes.Zombie;
 					c.ViewRadius = 14;

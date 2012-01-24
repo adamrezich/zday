@@ -27,6 +27,7 @@ namespace ZDay {
 		public DrawModes DrawMode = DrawModes.Normal;
 		public string Description;
 		public Types Type;
+		public int Density = 1;
 
 		public static Decal Generate(Prefabs prefab, Point position) {
 			IEnumerable<Decal> q;
@@ -36,11 +37,14 @@ namespace ZDay {
 			List<Decal> matches = q.ToList<Decal>();
 			if (matches.Count == 1) {
 				if (prefab == Prefabs.BloodDrops || prefab == Prefabs.BloodSplatter || prefab == Prefabs.BloodPool) {
+					matches[0].Density++;
 					switch (matches[0].Type) {
 						case Types.BloodDrops:
+							if (matches[0].Density < 3) return null;
 							Area.Current.Decals.Remove(matches[0]);
 							return Generate(Prefabs.BloodSplatter, position);
 						case Types.BloodSplatter:
+							if (matches[0].Density < 8) return null;
 							Area.Current.Decals.Remove(matches[0]);
 							return Generate(Prefabs.BloodPool, position);
 						case Types.BloodPool:
@@ -95,7 +99,6 @@ namespace ZDay {
 					}
 					break;
 			}
-			
 		}
 	}
 }
