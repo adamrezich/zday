@@ -103,6 +103,16 @@ namespace ZDay {
 				}
 				return "There are " + English.NumberToWords(items.Count) + " " + items[0].ToString() + "s here.";
 			}
+
+			// No items? Well, let's check for decals
+			IEnumerable<Decal> q2 = from i in Area.Current.Decals
+								  where i.Area == this && i.Position == position
+								  select i;
+			List<Decal> decals = q2.ToList<Decal>();
+
+			if (decals.Count == 1) {
+				return decals[0].Description;
+			}
 			return "";
 		}
 	}

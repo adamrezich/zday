@@ -330,7 +330,7 @@ namespace ZDay {
 					c.AttackModifier = 4;
 					c.Defense = 10;
 					c.Speed = 2;
-					c.MaxHP = 10;
+					c.MaxHP = 1000;
 					c.HP = c.MaxHP;
 					c.ViewRadius = 23;
 					break;
