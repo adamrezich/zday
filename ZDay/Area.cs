@@ -96,7 +96,12 @@ namespace ZDay {
 				string item = items[0].ToString();
 				return "There is " + English.SingularPronoun(item) + " " + item + " here.";
 			}
-			if (items.Count > 1) return "There are several things here.";
+			if (items.Count > 1) {
+				foreach (Item i in items) {
+					if (i.ToString() != items[0].ToString()) return "There are several things here.";
+				}
+				return "There are " + English.NumberToWords(items.Count) + " " + items[0].ToString() + "s here.";
+			}
 			return "";
 		}
 	}

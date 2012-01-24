@@ -19,8 +19,7 @@ namespace ZDay {
 			Item item = new Item();
 			switch (prefab) {
 				case Prefab.Corpse:
-					item.Symbol = '%';
-					item.ForegroundColor = TCODColor.desaturatedCrimson;
+					
 					break;
 			}
 			item.Area = Area.Current;

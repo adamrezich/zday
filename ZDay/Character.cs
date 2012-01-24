@@ -285,8 +285,19 @@ namespace ZDay {
 
 		public void Kill() {
 			Pathfinder.Dispose();
-			Item item = Item.Generate(Item.Prefab.Corpse, Position);
+			//Item item = Item.Generate(Item.Prefab.Corpse, Position);
+			GenerateCorpse();
 			Game.Current.Characters.Remove(this);
+		}
+
+		public Item GenerateCorpse() {
+			Item item = new Item();
+			item.Symbol = '%';
+			item.ForegroundColor = TCODColor.desaturatedCrimson;
+			item.Class = (IsZombie ? "zombie " : "") + "corpse";
+			item.Area = Area;
+			item.Position = Position;
+			return item;
 		}
 
 		public void LevelUp() {
