@@ -179,7 +179,7 @@ namespace ZDay {
 					}
 				}
 
-				if (positionLast.X == Position.X && positionLast.Y == Position.Y) idleTimer += 1;
+				if (positionLast == Position) idleTimer += 1;
 				else idleTimer = 0;
 				if (idleTimer > 3) {
 					idleTimer = 0;
@@ -285,6 +285,7 @@ namespace ZDay {
 
 		public void Kill() {
 			Pathfinder.Dispose();
+			Item item = Item.Generate(Item.Prefab.Corpse, Position);
 			Game.Current.Characters.Remove(this);
 		}
 

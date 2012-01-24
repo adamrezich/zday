@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace ZDay {
-	public class Point {
+	public struct Point {
 		public int X;
 		public int Y;
 
@@ -37,11 +37,14 @@ namespace ZDay {
 			return new Point(p1.X - p2.X, p1.Y - p2.Y);
 		}
 
-		public override bool Equals(object obj) {
+		/*public override bool Equals(object obj) {
 			if (obj == null) return false;
-			Point p = obj as Point;
-			if ((System.Object)p == null) return false;
-			return (X == p.X && Y == p.Y);
+			if (!(obj is Point)) return false;
+			return (X == (obj as Point).X && Y == (obj as Point).Y);
+		}*/
+
+		public override bool Equals(object obj) {
+			return base.Equals(obj);
 		}
 
 		public override int GetHashCode() {

@@ -10,6 +10,7 @@ namespace ZDay {
 		public bool Over = false;
 		public Character Player;
 		public List<Character> Characters = new List<Character>();
+		public List<Item> Items = new List<Item>();
 		public Random RNG = new Random();
 
 		public Game() {
@@ -208,6 +209,10 @@ namespace ZDay {
 			foreach (Terrain t in Area.Current.Terrain) {
 				if (Area.Current.Map.isInFov(t.Position.X, t.Position.Y))
 					t.Draw(TCODConsole.root, offset);
+			}
+			foreach (Item i in Area.Current.Items) {
+				if (Area.Current.Map.isInFov(i.Position.X, i.Position.Y))
+				i.Draw(TCODConsole.root, offset);
 			}
 			foreach (Character c in Area.Current.Characters) {
 				//if (Area.Current.Map.isInFov(c.Position.X, c.Position.Y))

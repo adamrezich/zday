@@ -23,6 +23,15 @@ namespace ZDay {
 			}
 		}
 
+		public List<Item> Items {
+			get {
+				IEnumerable<Item> q = from c in Game.Current.Items
+										   where c.Area == this
+										   select c;
+				return q.ToList<Item>();
+			}
+		}
+
 		public bool SolidTerrainAt(Point position) {
 			IEnumerable<Terrain> q = from f in Terrain
 									 where f.Position.X == position.X && f.Position.Y == position.Y
