@@ -299,6 +299,7 @@ namespace ZDay {
 		public void Kill() {
 			Pathfinder.Dispose();
 			//Item item = Item.Generate(Item.Prefab.Corpse, Position);
+			for (int i = 0; i < 2 + Game.Current.RNG.Next(7); i++) Bleed();
 			GenerateCorpse();
 			Game.Current.Characters.Remove(this);
 		}
@@ -337,7 +338,7 @@ namespace ZDay {
 					c.AttackModifier = 4;
 					c.Defense = 10;
 					c.Speed = 2;
-					c.MaxHP = 10;
+					c.MaxHP = 30;
 					c.HP = c.MaxHP;
 					c.ViewRadius = 23;
 					break;

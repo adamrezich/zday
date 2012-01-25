@@ -54,7 +54,7 @@ namespace ZDay {
 		public void Generate() {
 			LoadFromFile("Map01.txt");
 			foreach (Terrain t in Terrain) {
-				if (t.Solid == false && Game.Current.RNG.Next(160) == 0) Character.Generate(Character.Prefab.Zombie, new Point(t.Position.X, t.Position.Y));
+				if (t.Solid == false && Game.Current.RNG.Next(120) == 0) Character.Generate(Character.Prefab.Zombie, new Point(t.Position.X, t.Position.Y));
 			}
 		}
 

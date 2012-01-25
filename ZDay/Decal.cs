@@ -39,6 +39,7 @@ namespace ZDay {
 			if (matches.Count == 1) {
 				if (prefab == Prefabs.BloodDrops || prefab == Prefabs.BloodSplatter || prefab == Prefabs.BloodPool) {
 					matches[0].Density++;
+					matches[0].Life = 0;
 					switch (matches[0].Type) {
 						case Types.BloodDrops:
 							if (matches[0].Density < 3) return null;
@@ -98,6 +99,7 @@ namespace ZDay {
 		public new void Draw(TCODConsole console, Point offset) {
 			switch (DrawMode) {
 				case DrawModes.Normal:
+					if (Area.SolidTerrainAt(Position)) goto case DrawModes.OnlyForegroundColor;
 					base.Draw(console, offset);
 					break;
 					
