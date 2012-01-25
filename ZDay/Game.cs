@@ -92,6 +92,9 @@ namespace ZDay {
 			foreach (Character c in Area.Current.Characters) {
 				c.Update();
 			}
+			foreach (Decal d in Area.Current.Decals) {
+				d.Update();
+			}
 			if (Player.HP < 1) {
 				Console.WriteLine("GAME OVER");
 				Draw();

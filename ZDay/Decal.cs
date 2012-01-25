@@ -28,6 +28,7 @@ namespace ZDay {
 		public string Description;
 		public Types Type;
 		public int Density = 1;
+		public int Life = 0;
 
 		public static Decal Generate(Prefabs prefab, Point position) {
 			IEnumerable<Decal> q;
@@ -58,7 +59,7 @@ namespace ZDay {
 				case Prefabs.BloodDrops:
 					d.Type = Types.BloodDrops;
 					d.DrawMode = DrawModes.OnlyForegroundColor;
-					d.ForegroundColor = TCODColor.desaturatedCrimson;
+					d.ForegroundColor = TCODColor.Interpolate(TCODColor.red, new TCODColor(58, 5, 14), 0f);
 					d.Description = "There is some blood on the ground here.";
 					break;
 				case Prefabs.BloodSplatter:
@@ -79,6 +80,19 @@ namespace ZDay {
 			d.Position = position;
 			Area.Current.Decals.Add(d);
 			return d;
+		}
+
+		public new void Update() {
+			if (Life < 500) Life++;
+			switch (Type) {
+				case Types.BloodDrops:
+				case Types.BloodSplatter:
+					ForegroundColor = TCODColor.Interpolate(TCODColor.red, new TCODColor(58, 5, 14), Math.Min(1f, (float)Life / 500f));
+					break;
+				case Types.BloodPool:
+					BackgroundColor = TCODColor.Interpolate(TCODColor.red, new TCODColor(58, 5, 14), Math.Min(1f, (float)Life / 500f));
+					break;
+			}
 		}
 
 		public new void Draw(TCODConsole console, Point offset) {
